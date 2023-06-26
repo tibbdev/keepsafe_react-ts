@@ -6,10 +6,14 @@ import { Project } from "./Project";
 
 function ProjectsPage()
 {
+    const SaveProject = (project: Project) => {
+        console.log('Saving Project: ', project);
+    };
+
     return (
         <>
             <h1>Projects</h1>
-            <ProjectList projects={MOCK_PROJECTS} />
+            <ProjectList projects={MOCK_PROJECTS} onSave={SaveProject}/>
         </>
     );
 }
