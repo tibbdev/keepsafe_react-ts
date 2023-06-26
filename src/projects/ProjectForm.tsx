@@ -1,7 +1,11 @@
 import React from "react";
 import { Project } from "./Project";
 
-function ProjectForm()
+interface ProjectFormProps {
+    onCancel: () => void;
+}
+
+function ProjectForm({onCancel} : ProjectFormProps)
 {
     return (
         <form className="input-group vertical">
@@ -25,7 +29,7 @@ function ProjectForm()
             <div className="input-group">
                 <button className="primary bordered medium">Save</button>
                 <span />
-                <button className="bordered medium">Cancel</button>
+                <button className="bordered medium" onClick={onCancel}>Cancel</button>
             </div>
         </form>
     );
