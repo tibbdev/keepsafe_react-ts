@@ -10,8 +10,17 @@ interface ProjectFormProps {
 function ProjectForm({project: initialProject, onSave, onCancel} : ProjectFormProps)
 {
     const [project, setProject] = useState(initialProject);
+    const [errors, setErrors] = useState({
+        name: '',
+        description: '',
+        budget: '',
+    });
     const handleSubmit = (evt: SyntheticEvent) => {
         evt.preventDefault();
+        if(!isValid())
+        {
+            return;
+        }
         onSave(project);
     };
 
@@ -42,21 +51,71 @@ function ProjectForm({project: initialProject, onSave, onCancel} : ProjectFormPr
             updatedProject = new Project({ ...p, ...change });
             return updatedProject;
         });
+
+        setErrors(() => validate(updatedProject));
     };
+
+    function validate(project: Project)
+    {
+        let errors:any = {name: '', description: '', budget: ''};
+        if (0 === project.name.length)
+        {
+            errors.name = 'Name is required';
+        }
+        else if (3 > project.name.length)
+        {
+            errors.name = 'Name must be greater than 3 characters';
+        }
+
+        if (0 === project.description.length)
+        {
+            errors.description = 'Description is required';
+        }
+
+        if (0 === project.budget)
+        {
+            errors.budget = 'Budget must be greater than £0';
+        }
+        return errors;
+    }
+
+    function isValid()
+    {
+        return (
+            0 === errors.name.length &&
+            0 === errors.description.length &&
+            0 === errors.budget.length
+        );
+    }
 
     return (
         <form className="input-group vertical" onSubmit={handleSubmit}>
             {/* Project Name */}
             <label htmlFor="name">Project Name</label>
             <input type="text" name="name" placeholder="Enter Project Name" value={project.name} onChange={handleChange} />
+            {errors.name.length > 0 && (
+                <div className='card error'>
+                    <p>{errors.name}</p>
+                </div>
+            )}
 
             {/* Project Description */}
             <label htmlFor="description">Project Description</label>
             <textarea name="description" placeholder="Enter Project Description" value={project.description} onChange={handleChange}></textarea>
+            {errors.description.length > 0 && (
+                <div className='card error'>
+                    <p>{errors.description}</p>
+                </div>
+            )}
 
             {/* Project Budget */}
             <label htmlFor="budget">Project Budget</label>
             <input type="number" name="budget" placeholder="Enter Budget" value={project.budget} onChange={handleChange} />
+            {errors.budget.length > 0 && (
+                <div className='card error'>
+                    <p>{errors.budget}</p>
+                </div>
+            )}
 
             {/* Project Is Active */}
             <label htmlFor="isActive">Is Active?</label>
