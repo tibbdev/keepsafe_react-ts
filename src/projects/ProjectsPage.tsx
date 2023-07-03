@@ -10,6 +10,7 @@ function ProjectsPage()
     const [projects, setProjects] = useState<Project[]>([]);
     const [loading, setLoading] = useState(false);
     const [error, setError] = useState<string | undefined>(undefined);
+    const [currentPage, setCurrentPage] = useState<number>(1);
 
     useEffect(() => 
     {
@@ -18,9 +19,17 @@ function ProjectsPage()
             setLoading(true);
             try
             {
-                const data = await projectAPI.get(1);
+                const data = await projectAPI.get(currentPage);
                 setError('');
-                setProjects(data);
+
+                if(1 === currentPage)
+                {
+                    setProjects(data);
+                }
+                else
+                {
+                    setProjects((projects) => [...projects, ...data]);
+                }
             }
             catch (e)
             {
@@ -35,7 +44,12 @@ function ProjectsPage()
             }
         }
         loadProjects();
-    }, []);
+    }, [currentPage]); // UseEffect has a dependency on the value of currentPage.
+
+    const handleMoreClick = () =>
+    {
+        setCurrentPage((currentPage) => currentPage + 1);
+    }
 
     const SaveProject = (project: Project) => {
         console.log('Saving Project: ', project);
@@ -63,6 +77,17 @@ function ProjectsPage()
                 )
             }
             <ProjectList projects={projects} onSave={SaveProject}/>
+            {
+                !loading && !error && (
+                    <div className="row">
+                        <div className="col-sm-12">
+                            <div className="button-group fluid">
+                                <button onClick={handleMoreClick}>More...</button>
+                            </div>
+                        </div>
+                    </div>
+                )
+            }
             {
                 loading && (
                     <div className="center-page">
